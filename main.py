@@ -1,12 +1,6 @@
 import streamlit as st
-from openai import OpenAI
-from form_components import experience_form
+from form_components import render_form
 from chat import openai_chat
-
-
-@st.cache_resource()
-def get_cached_openai_service():
-    return OpenAI()
 
 
 def main():
@@ -17,7 +11,7 @@ def main():
         openai_chat()
 
     else:
-        experience_form()
+        render_form()
 
 
 if __name__ == "__main__":
