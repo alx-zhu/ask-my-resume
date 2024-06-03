@@ -1,6 +1,6 @@
 import streamlit as st
 from form_components import render_form
-from chat import openai_chat
+from chat_components import openai_chat
 
 
 def main():
@@ -12,6 +12,9 @@ def main():
 
     else:
         render_form()
+        if st.button("Submit"):
+            st.session_state.is_chat_open = True
+            st.rerun()
 
 
 if __name__ == "__main__":

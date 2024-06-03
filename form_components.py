@@ -1,7 +1,13 @@
 import streamlit as st
 from datetime import date
+from constants import SAMPLE_RESUME
 
 def render_form():
+    if SAMPLE_RESUME and "intro" not in st.session_state:
+        st.session_state.intro = SAMPLE_RESUME["intro"]
+        st.session_state.experience = SAMPLE_RESUME["experience"]
+        st.session_state.projects = SAMPLE_RESUME["projects"]
+        st.session_state.education = SAMPLE_RESUME["education"]
     st.title("Create Your Profile")
     introduction_form()
     st.divider()
@@ -15,66 +21,67 @@ def introduction_form():
     if "intro" not in st.session_state:
         st.session_state.intro = {
             "name": "",
+            "email": "",
             "summary": "",
         }
     
     st.subheader("Introduction")
     st.session_state.intro["name"] = st.text_input(f"Name", value=st.session_state.intro["name"], key="name")
+    st.session_state.intro["email"] = st.text_input(f"Email", value=st.session_state.intro["email"], key="email")
     st.session_state.intro["summary"] = st.text_area(f"Summary", value=st.session_state.intro["summary"], key="summary")
 
 
 def experience_form():
     # Initialize session state for storing work experiences
-    if "work_experiences" not in st.session_state:
-        st.session_state.work_experiences = []
+    if "experience" not in st.session_state:
+        st.session_state.experience = []
 
     # Function to add an empty experience form
     def add_experience_form():
-        st.session_state.work_experiences.append(
+        st.session_state.experience.append(
             {
-                "title": "Title",
-                "company": "Company",
+                "title": "",
+                "company": "",
                 "start": date.today(),
                 "end": date.today(),
                 "description": "",
             }
         )
 
-
     # Display experience forms
     st.subheader("Experience")
 
-    # Add experience button
-    if st.button("Add Experience"):
-        add_experience_form()
-
-    for i, experience in enumerate(st.session_state.work_experiences):
-        with st.expander(f"{experience["title"]} @ {experience["company"]}", expanded=True):
-            st.session_state.work_experiences[i]["title"] = st.text_input(
+    for i, experience in enumerate(st.session_state.experience):
+        with st.expander(f"{f"{experience["title"]} @ {experience["company"]}" if experience["title"] else "Untitled Experience"}", expanded=True):
+            st.session_state.experience[i]["title"] = st.text_input(
                 f"Job Title",
                 value=experience["title"],
                 key=f"job_title_{i}",
             )
-            st.session_state.work_experiences[i]["company"] = st.text_input(
+            st.session_state.experience[i]["company"] = st.text_input(
                 f"Company", value=experience["company"], key=f"company_{i}"
             )
-            st.session_state.work_experiences[i]["start"] = st.date_input(
+            st.session_state.experience[i]["start"] = st.date_input(
                 f"Start Date",
                 value=experience["start"],
                 key=f"start_date_{i}",
             )
-            st.session_state.work_experiences[i]["end"] = st.date_input(
+            st.session_state.experience[i]["end"] = st.date_input(
                 f"End Date", value=experience["end"], key=f"end_date_{i}"
             )
-            st.session_state.work_experiences[i]["description"] = st.text_area(
+            st.session_state.experience[i]["description"] = st.text_area(
                 f"Description",
                 value=experience["description"],
                 key=f"description_{i}",
             )
 
             if st.button("Delete", key=f"delete_button_{i}"):
-                del st.session_state.work_experiences[i]
+                del st.session_state.experience[i]
                 st.rerun()
+
+    # Add experience button
+    if st.button("Add Experience"):
+        add_experience_form()
 
 def projects_form():
     # Initialize session state for storing projects
@@ -95,10 +102,6 @@ def projects_form():
 
     # Display project forms
     st.subheader("Projects")
-
-    # Add project button
-    if st.button("Add Project"):
-        add_project_form()
 
     for i, project in enumerate(st.session_state.projects):
         with st.expander(f"{project['title'] if project["title"] else "Untitled Project"}", expanded=True):
@@ -128,6 +131,10 @@ def projects_form():
                 del st.session_state.projects[i]
                 st.rerun()
 
+    # Add project button
+    if st.button("Add Project"):
+        add_project_form()
+
 
 def education_form():
     if "education" not in st.session_state:
@@ -145,10 +152,6 @@ def education_form():
 
     # Display education forms
     st.subheader("Education")
-
-    # Add education button
-    if st.button("Add Education"):
-        add_education_form()
 
     for i, ed in enumerate(st.session_state.education):
         with st.expander(f"{ed["degree"]} @ {ed['school']}", expanded=True):
@@ -180,4 +183,8 @@ def education_form():
             if st.button("Delete", key=f"ed_delete_button_{i}"):
                 del st.session_state.education[i]
                 st.rerun()
+    
+    # Add education button
+    if st.button("Add Education"):
+        add_education_form()
 
