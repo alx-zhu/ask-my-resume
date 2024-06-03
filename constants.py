@@ -1,3 +1,5 @@
+from datetime import date
+
 OPENAI_INITIAL_CONVERSATION = [
     {
         "role": "system",
@@ -75,8 +77,8 @@ I highly prioritize learning and gaining experience on all parts of the tech sta
         {
             "title": "Founding Engineer",
             "company": "Mycelium Sports",
-            "start": "2024-01-01",
-            "end": "2024-06-03",
+            "start": date(2024, 1, 1),
+            "end": date(2024, 6, 3),
             "description": """
 Co-led design and development efforts of two major initial prototypes used by 2 initial pilot users to process over 20 hours of sports content in less than 20 minutes each week. Rapidly deployed two prototypes in less than 1.5 weeks.
 
@@ -86,8 +88,8 @@ Created a backend utilizing AWS EC2 to host a computer vision algorithm using po
         {
             "title": "15-210 Parallel Algorithms Teaching Assistant",
             "company": "Carnegie Mellon University",
-            "start": "2024-01-01",
-            "end": "2024-05-01",
+            "start": date(2024, 1, 1),
+            "end": date(2024, 5, 1),
             "description": """
 Co-taught weekly 50-minute recitations on Parallel Algorithms topics including Trees, Randomized Algorithms, Graph Algorithms, and Dynamic Programming.
 
@@ -97,21 +99,21 @@ Hosted office hours for over 200 students to teach parallel algorithms proofs, c
         {
             "title": "App Infrastructure Software Engineer Intern",
             "company": "Roblox",
-            "start": "2023-05-01",
-            "end": "2023-08-01",
+            "start": date(2023, 5, 1),
+            "end": date(2023, 8, 1),
             "description": """
 Conducted in-depth research and presented a proposal for a new development pipeline for the Roblox Web, utilizing web components. Successfully orchestrated a high-impact initiative that engaged more than 5 internal teams, showcasing a commitment to innovation and cross-functional collaboration.
 
 Led the project as an App Infrastructure intern, steering crucial design decisions. Established a comprehensive framework for the Roblox Web pipeline by creating a GitHub template, publishing 3 npm packages, and developing 4 essential components. This end-to-end solution was integrated into the production environment, marking a significant milestone.
 
-Through rigorous experimentation, confirmed the absence of negative effects on users or performance. Shared compelling findings with 3 stakeholder/early-adopter teams, preparing for pipeline integration into Roblox Web by Q1 of 2024.  
+Through rigorous experimentation, confirmed the absence of negative effects on users or performance. Shared compelling findings with 3 stakeholder/early-adopter teams, preparing for pipeline integration into Roblox Web by Q1 of 2024
 """,
         },
         {
             "title": "Lead Backend Engineer",
             "company": "Studyfind",
-            "start": "2023-05-01",
-            "end": "2024-02-01",
+            "start": date(2023, 5, 1),
+            "end": date(2024, 2, 1),
             "description": """     
 Led and coordinated a dynamic team of 8 software developers, orchestrating Scrum sprints and implementing a streamlined workflow for design and development processes across the company.
 
@@ -123,8 +125,8 @@ Oversaw the execution of 5 pivotal projects, including scraping and analyzing re
         {
             "title": "Software Developer",
             "company": "Studyfind",
-            "start": "2022-12-01",
-            "end": "2023-05-01",
+            "start": date(2022, 12, 1),
+            "end": date(2023, 5, 1),
             "description": """
 Working as a part of the Business Intelligence team to automate file-processing and emailing to expand the registry of researchers at Studyfind to more than 200 researchers.
 
@@ -134,8 +136,8 @@ Led outreach to more than 20,000 clinical researchers through emailing campaigns
         {
             "title": "Jr Software Developer Intern",
             "company": "Studyfind",
-            "start": "2022-05-01",
-            "end": "2022-12-01",
+            "start": date(2022, 5, 1),
+            "end": date(2022, 12, 1),
             "description": """
 Created a cloud-docker application to further automate the emailing process and remove as much human interaction as possible from the process.
 
@@ -149,8 +151,8 @@ Worked as a part of the Business Intelligence team to create automated solutions
         {
             "title": "Ask My Resume",
             "organization": "Personal Project",
-            "start": "2024-06-01",
-            "end": "2024-06-03",
+            "start": date(2024, 6, 1),
+            "end": date(2024, 6, 3),
             "description": """
 Created a chat interface for users to allow others to interact directly with their resume in a conversational manner. This seeks to address challenges with communication between founders, investors, recruiters, and engineers, to allow for each user to communicate and understand the background of another user without needing synchronous meeting times that are difficult to schedule.
 
@@ -160,8 +162,8 @@ Utilizes the OpenAI API and function-calling to implement the chat interface, pr
         {
             "title": "Google Calendar Assistant",
             "organization": "Personal Project",
-            "start": "2024-05-26",
-            "end": "2025-06-03",
+            "start": date(2024, 5, 26),
+            "end": date(2025, 6, 3),
             "description": """
 Developed and deployed a Python Streamlit application that creates a chat interface for users to schedule their daily events, which allows users to schedule their day in a conversational manner.
 
@@ -173,33 +175,30 @@ In the process of deploying to users and developing a GoLang API and Google Exte
         {
             "title": "Distributed Bitcoin Miner",
             "organization": "Carnegie Mellon University",
-            "start": "2023-10-01",
-            "end": "2023-11-01",
+            "start": date(2023, 10, 1),
+            "end": date(2023, 11, 1),
             "description": """
 Implemented an LSP communication protocol to provide reliable, in-order message passing within a client-server model across UDP connections using GoLang, sliding-window queues and priority heaps.
 
-Distributed brute-force hash problems across multiple miners using a round-robin scheduling strategy to ensure fairness
-and efficiency for inputs of sizes scaling larger than 10^9, while tolerating miner and client failures on an unstable network.            
+Distributed brute-force hash problems across multiple miners using a round-robin scheduling strategy to ensure fairness and efficiency for inputs of sizes scaling larger than 10^9, while tolerating miner and client failures on an unstable network.            
 """,
         },
         {
             "title": "Deferrd (Startup)",
             "organization": "Deferrd",
-            "start": "2024-01-01",
-            "end": "2024-04-01",
+            "start": date(2024, 1, 1),
+            "end": date(2024, 4, 1),
             "description": """
-Co-founded a startup dedicated to lowering barriers for starting companies, by utilizing Convertible Notes and SAFEs to
-mitigate the difficulties of hiring in early-stage startups without funding.
+Co-founded a startup dedicated to lowering barriers for starting companies, by utilizing Convertible Notes and SAFEs to mitigate the difficulties of hiring in early-stage startups without funding.
 
-Actively engaged in developing an MVP using Amazon Web Services and NodeJS to manage backend communications,
-storage, and database operations, alongside a React frontend.
+Actively engaged in developing an MVP using Amazon Web Services and NodeJS to manage backend communications, storage, and database operations, alongside a React frontend.
 """,
         },
         {
             "title": "RAFT Consensus Algorithm",
             "organization": "Carnegie Mellon University",
-            "start": "2023-11-01",
-            "end": "2023-12-01",
+            "start": date(2023, 11, 1),
+            "end": date(2023, 12, 1),
             "description": """
 Implemented the RAFT Consensus Algorithm to maintain consensus between groups of nodes, tolerating network partitions, failures, and inconsistencies.
 
@@ -213,12 +212,11 @@ Facilitated concurrent communication between nodes using RPC calls to relay hear
         {
             "school": "Carnegie Mellon University",
             "degree": "B.S. in Information Systems with a Minor in Computer Science",
-            "start": "2021-08-01",
-            "end": "2025-05-01",
+            "start": date(2021, 8, 1),
+            "end": date(2025, 5, 1),
             "gpa": 4.0,
             "description": """
-Relevant Coursework: 11-681 AI Venture Studio, 15-440 Distributed Systems, 15-213 Computer Systems, 15-210 Parallel
-and Sequential Algorithms, 67-262 Database Design and Development, 67-272 Application Design and Development.     
+Relevant Coursework: 11-681 AI Venture Studio, 15-440 Distributed Systems, 15-213 Computer Systems, 15-210 Parallel and Sequential Algorithms, 67-262 Database Design and Development, 67-272 Application Design and Development.     
 """,
         }
     ],

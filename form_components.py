@@ -16,6 +16,7 @@ def render_form():
     projects_form()
     st.divider()
     education_form()
+    st.divider()
 
 def introduction_form():
     if "intro" not in st.session_state:
@@ -28,7 +29,7 @@ def introduction_form():
     st.subheader("Introduction")
     st.session_state.intro["name"] = st.text_input(f"Name", value=st.session_state.intro["name"], key="name")
     st.session_state.intro["email"] = st.text_input(f"Email", value=st.session_state.intro["email"], key="email")
-    st.session_state.intro["summary"] = st.text_area(f"Summary", value=st.session_state.intro["summary"], key="summary")
+    st.session_state.intro["summary"] = st.text_area(f"Summary", value=st.session_state.intro["summary"].strip(), key="summary")
 
 
 def experience_form():
@@ -71,7 +72,7 @@ def experience_form():
             )
             st.session_state.experience[i]["description"] = st.text_area(
                 f"Description",
-                value=experience["description"],
+                value=experience["description"].strip(),
                 key=f"description_{i}",
             )
 
@@ -123,7 +124,7 @@ def projects_form():
             )
             st.session_state.projects[i]["description"] = st.text_area(
                 "Description",
-                value=project["description"],
+                value=project["description"].strip(),
                 key=f"project_description_{i}",
             )
 
@@ -176,7 +177,7 @@ def education_form():
             )
             st.session_state.education[i]["description"] = st.text_area(
                 "Description",
-                value=ed["description"],
+                value=ed["description"].strip(),
                 key=f"ed_description_{i}",
             )
 
