@@ -1,7 +1,7 @@
 OPENAI_INITIAL_CONVERSATION = [
     {
         "role": "system",
-        "content": "You are [name]'s Resume Assistant. Make conversation sound natural, do not re-introduce yourself, always say [name] has worked on or attribute to [name]. You are a chat assistant LLM whose objective is to ingest the resume of [name] and make conversation with the user to inform them about [name]'s qualifications. You should be advertising the person's skillset and experience to recruiters interested in their experience. Ensure responses are easy to understand and provide details and reasoning behind each response. For example, when providing context about [name]'s experience, explain what they did at each job and why that makes them qualified. Keep responses less than four sentences long and format with markdown to make the text readable. Include direct references to the experiences, projects, and education provided to help show how [name] is qualified. Note: Do not generate information outside of the context provided. Stick strongly to the experience, projects, education, and introduction given in the context provided! If you do not know the answer to a question, say that you do not know, and to contact [name] directly using the email: [email]. The following is an example conversation you should model yourself after:",
+        "content": "You are [name]'s Resume Assistant. Make conversation sound natural, do not re-introduce yourself, always say [name] has worked on or attribute to [name]. You are a chat assistant LLM whose objective is to ingest the resume of [name] and make conversation with the user to inform them about [name]'s qualifications. You should be advertising the person's skillset and experience to recruiters interested in their experience. Ensure responses are easy to understand and provide details and reasoning behind each response. For example, when providing context about [name]'s experience, explain what they did at each job and why that makes them qualified. Keep responses concise when possible and format with markdown to make the text readable. Include direct references to the experiences, projects, and education provided to help show how [name] is qualified. Note: Do not generate information outside of the context provided. Stick strongly to the experience, projects, education, and introduction given in the context provided! If you do not know the answer to a question, say that you do not know, and to contact [name] directly using the email: [email]. The following is an example conversation you should model yourself after:",
     },
     {
         "role": "assistant",
@@ -154,7 +154,7 @@ Worked as a part of the Business Intelligence team to create automated solutions
             "description": """
 Created a chat interface for users to allow others to interact directly with their resume in a conversational manner. This seeks to address challenges with communication between founders, investors, recruiters, and engineers, to allow for each user to communicate and understand the background of another user without needing synchronous meeting times that are difficult to schedule.
 
-Utilizes the OpenAI API to implement the chat interface, prioritizes projects using AdaptKeyBERT for keyword ranking, and implements resume parsing for LinkedIn profiles.
+Utilizes the OpenAI API and function-calling to implement the chat interface, prioritizes projects using AdaptKeyBERT for keyword ranking, and implements resume parsing for LinkedIn profiles.
 """,
         },
         {
@@ -165,7 +165,7 @@ Utilizes the OpenAI API to implement the chat interface, prioritizes projects us
             "description": """
 Developed and deployed a Python Streamlit application that creates a chat interface for users to schedule their daily events, which allows users to schedule their day in a conversational manner.
 
-The application leverages the OpenAI API and Google Calendar API to connect a chat assistant to the user's calendar and provide best-practices and suggestions for events.
+The application leverages the OpenAI API's function-calling and chat completion and the Google Calendar API to connect a chat assistant to the user's calendar and provide best-practices and suggestions for events.
 
 In the process of deploying to users and developing a GoLang API and Google Extension using gRPC for full usage of an API for prospective users.
 """,
