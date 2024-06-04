@@ -10,7 +10,9 @@ def main():
     if st.session_state.is_chat_open:
         if st.button("Back to My Resume"):
             st.session_state.is_chat_open = False
-            st.rerun
+            st.session_state.display_conversation = []
+            st.session_state.gpt_conversation = []
+            st.rerun()
         openai_chat()
 
     else:
