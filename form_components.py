@@ -2,6 +2,11 @@ import streamlit as st
 from datetime import date
 from constants import SAMPLE_RESUME
 
+def form_submit_button(id=""):
+    if st.button("Submit", key=f"submit_button_{id}"):
+        st.session_state.is_chat_open = True
+        st.rerun()
+            
 def render_form():
     if SAMPLE_RESUME and "intro" not in st.session_state:
         st.session_state.intro = SAMPLE_RESUME["intro"]
@@ -17,6 +22,36 @@ def render_form():
     st.divider()
     education_form()
     st.divider()
+
+    with st.sidebar:
+        if st.button("Import LinkedIn Profile", key="import_from_linkedin"):
+            pass
+
+        if st.button("Use Alex's Sample Resume", key="use_sample"):
+            st.session_state.intro = SAMPLE_RESUME["intro"]
+            st.session_state.experience = SAMPLE_RESUME["experience"]
+            st.session_state.projects = SAMPLE_RESUME["projects"]
+            st.session_state.education = SAMPLE_RESUME["education"]
+            st.rerun()
+
+        st.divider()
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Clear All", key="clear_all"):
+                st.session_state.intro = {
+                    "name": "",
+                    "email": "",
+                    "summary": "",
+                }
+                st.session_state.experience = []
+                st.session_state.projects = []
+                st.session_state.education = []
+                st.rerun()
+        with col2:
+            form_submit_button("sidebar")
+            
+        
 
 def introduction_form():
     if "intro" not in st.session_state:
@@ -48,6 +83,7 @@ def experience_form():
                 "description": "",
             }
         )
+        st.rerun()
 
     # Display experience forms
     st.subheader("Experience")
@@ -100,6 +136,7 @@ def projects_form():
                 "description": "",
             }
         )
+        st.rerun()
 
     # Display project forms
     st.subheader("Projects")
@@ -150,6 +187,7 @@ def education_form():
             "gpa": 0.0,
             "description": "",
         })
+        st.rerun()
 
     # Display education forms
     st.subheader("Education")
