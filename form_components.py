@@ -212,7 +212,7 @@ def education_form():
     st.subheader("Education")
 
     for i, ed in enumerate(st.session_state.education):
-        title = {ed["degree"]} @ {ed["school"]}
+        title = f"{ed['degree']} @ {ed['school']}"
         with st.expander(title, expanded=True):
             st.session_state.education[i]["school"] = st.text_input(
                 "School/University",
