@@ -2,11 +2,13 @@ import streamlit as st
 from datetime import date
 from constants import SAMPLE_RESUME
 
+
 def form_submit_button(id=""):
     if st.button("Submit", key=f"submit_button_{id}"):
         st.session_state.is_chat_open = True
         st.rerun()
-            
+
+
 def render_form():
     if SAMPLE_RESUME and "intro" not in st.session_state:
         st.session_state.intro = SAMPLE_RESUME["intro"]
@@ -50,8 +52,7 @@ def render_form():
                 st.rerun()
         with col2:
             form_submit_button("sidebar")
-            
-        
+
 
 def introduction_form():
     if "intro" not in st.session_state:
@@ -60,11 +61,17 @@ def introduction_form():
             "email": "",
             "summary": "",
         }
-    
+
     st.subheader("Introduction")
-    st.session_state.intro["name"] = st.text_input(f"Name", value=st.session_state.intro["name"], key="name")
-    st.session_state.intro["email"] = st.text_input(f"Email", value=st.session_state.intro["email"], key="email")
-    st.session_state.intro["summary"] = st.text_area(f"Summary", value=st.session_state.intro["summary"].strip(), key="summary")
+    st.session_state.intro["name"] = st.text_input(
+        f"Name", value=st.session_state.intro["name"], key="name"
+    )
+    st.session_state.intro["email"] = st.text_input(
+        f"Email", value=st.session_state.intro["email"], key="email"
+    )
+    st.session_state.intro["summary"] = st.text_area(
+        f"Summary", value=st.session_state.intro["summary"].strip(), key="summary"
+    )
 
 
 def experience_form():
@@ -89,7 +96,12 @@ def experience_form():
     st.subheader("Experience")
 
     for i, experience in enumerate(st.session_state.experience):
-        with st.expander(f"{f'{experience["title"]} @ {experience["company"]}' if experience['title'] else 'Untitled Experience'}", expanded=True):
+        title = (
+            f"{experience['title']} @ {experience['company']}"
+            if experience["title"]
+            else "Untitled Experience"
+        )
+        with st.expander(title, expanded=True):
             st.session_state.experience[i]["title"] = st.text_input(
                 f"Job Title",
                 value=experience["title"],
@@ -120,6 +132,7 @@ def experience_form():
     if st.button("Add Experience"):
         add_experience_form()
 
+
 def projects_form():
     # Initialize session state for storing projects
     if "projects" not in st.session_state:
@@ -142,7 +155,11 @@ def projects_form():
     st.subheader("Projects")
 
     for i, project in enumerate(st.session_state.projects):
-        with st.expander(f"{project['title'] if project['title'] else 'Untitled Project'}", expanded=True):
+        title = project["title"] if project["title"] else "Untitled Project"
+        with st.expander(
+            title,
+            expanded=True,
+        ):
             st.session_state.projects[i]["title"] = st.text_input(
                 "Project Title",
                 value=project["title"],
@@ -179,21 +196,24 @@ def education_form():
         st.session_state.education = []
 
     def add_education_form():
-        st.session_state.education.append({
-            "school": "",
-            "degree": "",
-            "start": date.today(),
-            "end": date.today(),
-            "gpa": 0.0,
-            "description": "",
-        })
+        st.session_state.education.append(
+            {
+                "school": "",
+                "degree": "",
+                "start": date.today(),
+                "end": date.today(),
+                "gpa": 0.0,
+                "description": "",
+            }
+        )
         st.rerun()
 
     # Display education forms
     st.subheader("Education")
 
     for i, ed in enumerate(st.session_state.education):
-        with st.expander(f"{ed['degree']} @ {ed['school']}", expanded=True):
+        title = {ed["degree"]} @ {ed["school"]}
+        with st.expander(title, expanded=True):
             st.session_state.education[i]["school"] = st.text_input(
                 "School/University",
                 value=ed["school"],
@@ -211,7 +231,12 @@ def education_form():
                 "End Date", value=ed["end"], key=f"ed_end_date_{i}"
             )
             st.session_state.education[i]["gpa"] = st.number_input(
-                "GPA", value = float(ed["gpa"]), key=f"ed_gpa_{i}", min_value=0.0, max_value=5.0, step=0.01
+                "GPA",
+                value=float(ed["gpa"]),
+                key=f"ed_gpa_{i}",
+                min_value=0.0,
+                max_value=5.0,
+                step=0.01,
             )
             st.session_state.education[i]["description"] = st.text_area(
                 "Description",
@@ -222,8 +247,7 @@ def education_form():
             if st.button("Delete", key=f"ed_delete_button_{i}"):
                 del st.session_state.education[i]
                 st.rerun()
-    
+
     # Add education button
     if st.button("Add Education"):
         add_education_form()
-
