@@ -66,15 +66,19 @@ def openai_chat():
             {"role": "assistant", "content": response}
         )
 
+    with st.sidebar:
+        st.subheader("Relevant Projects (from keywords)")
+        relevant_projects_placeholder = st.empty()
+        st.divider()
+        st.subheader("Relevant Experience (from keywords)")
+        relevant_experience_placeholder = st.empty()
+
     # Displaying and updating chat
     st.title("Ask My Resume")
 
-    with st.sidebar:
-        st.subheader("Relevant Projects")
-        relevant_projects_placeholder = st.empty()
-        st.divider()
-        st.subheader("Relevant Experience")
-        relevant_experience_placeholder = st.empty()
+    st.info(
+        "#### Thank you for visiting, I'd love your feedback! \n *Please reach out to me at alexanderzhu07@gmail.com with any comments or feedback.*  \n\n **NOTE: This application is a prototype and is still in development.** To keep the project free, users are currently limited to 10 messages."
+    )
 
     for message in st.session_state.display_conversation:
         with st.chat_message(message["role"]):

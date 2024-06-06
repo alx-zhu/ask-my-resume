@@ -8,9 +8,9 @@ def main():
         st.session_state.is_chat_open = False
 
     if st.session_state.is_chat_open:
-        chat_back_button("main")
         with st.sidebar:
             chat_back_button("sidebar")
+            st.divider()
         openai_chat()
 
     else:
