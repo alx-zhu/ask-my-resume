@@ -9,12 +9,20 @@ def form_submit_button(id=""):
         st.rerun()
 
 
+def reset_all_form_fields():
+    st.session_state.intro = {
+        "name": "",
+        "email": "",
+        "summary": "",
+    }
+    st.session_state.experience = []
+    st.session_state.projects = []
+    st.session_state.education = []
+
+
 def render_form():
-    if SAMPLE_RESUME and "intro" not in st.session_state:
-        st.session_state.intro = SAMPLE_RESUME["intro"]
-        st.session_state.experience = SAMPLE_RESUME["experience"]
-        st.session_state.projects = SAMPLE_RESUME["projects"]
-        st.session_state.education = SAMPLE_RESUME["education"]
+    if "intro" not in st.session_state:
+        reset_all_form_fields()
     st.title("Create Your Profile")
     introduction_form()
     st.divider()
@@ -41,14 +49,7 @@ def render_form():
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Clear All", key="clear_all"):
-                st.session_state.intro = {
-                    "name": "",
-                    "email": "",
-                    "summary": "",
-                }
-                st.session_state.experience = []
-                st.session_state.projects = []
-                st.session_state.education = []
+                reset_all_form_fields()
                 st.rerun()
         with col2:
             form_submit_button("sidebar")
@@ -251,3 +252,40 @@ def education_form():
     # Add education button
     if st.button("Add Education"):
         add_education_form()
+
+
+# {
+#     "intro": {
+#         "name": "",
+#         "email": "",
+#         "summary": "",
+#     },
+#     "experience": [
+#         {
+#             "title": "",
+#             "company": "",
+#             "start": date,
+#             "end": date,
+#             "description": "",
+#         },
+#     ],
+#     "projects": [
+#         {
+#             "title": "",
+#             "organization": "",
+#             "start": date,
+#             "end": date,
+#             "description": "",
+#         }
+#     ],
+#     "education": [
+#         {
+#             "school": "",
+#             "degree": "",
+#             "start": date,
+#             "end": date,
+#             "gpa": 0.0,
+#             "description": "",
+#         }
+#     ],
+# }
