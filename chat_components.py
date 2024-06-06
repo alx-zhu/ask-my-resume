@@ -131,8 +131,9 @@ def openai_chat():
                 ):
                     with st.expander(f"{rank}. {project['title']}"):
                         st.markdown(f"## {project['title']}")
-                        st.markdown(f"### @ {project['organization']}")
-                        st.markdown(f"#### *{project['start']} - {project['end']}*")
+                        st.markdown(
+                            f"#### {project['organization']} (*{project['start']} to {project['end']}*)"
+                        )
                         st.markdown(project["description"])
 
         with relevant_experience_placeholder:
@@ -144,9 +145,8 @@ def openai_chat():
                         f"{rank}. {experience['title']} @ {experience['company']}"
                     ):
                         st.markdown(f"## {experience['title']}")
-                        st.markdown(f"### @ {experience['company']}")
                         st.markdown(
-                            f"#### *{experience['start']} - {experience['end']}*"
+                            f"#### {experience['company']} (*{experience['start']} to {experience['end']}*)"
                         )
                         st.markdown(experience["description"])
 
@@ -186,11 +186,3 @@ def get_user_keyphrases():
     )[::-1]
     # with st.sidebar:
     #     st.write(keywords)
-
-
-def rank_projects():
-    pass
-
-
-def rank_experiences():
-    pass

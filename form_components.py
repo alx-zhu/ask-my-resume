@@ -89,7 +89,7 @@ def experience_form():
     st.subheader("Experience")
 
     for i, experience in enumerate(st.session_state.experience):
-        with st.expander(f"{f"{experience["title"]} @ {experience["company"]}" if experience["title"] else "Untitled Experience"}", expanded=True):
+        with st.expander(f"{f'{experience["title"]} @ {experience["company"]}' if experience['title'] else 'Untitled Experience'}", expanded=True):
             st.session_state.experience[i]["title"] = st.text_input(
                 f"Job Title",
                 value=experience["title"],
@@ -142,7 +142,7 @@ def projects_form():
     st.subheader("Projects")
 
     for i, project in enumerate(st.session_state.projects):
-        with st.expander(f"{project['title'] if project["title"] else "Untitled Project"}", expanded=True):
+        with st.expander(f"{project['title'] if project['title'] else 'Untitled Project'}", expanded=True):
             st.session_state.projects[i]["title"] = st.text_input(
                 "Project Title",
                 value=project["title"],
@@ -193,7 +193,7 @@ def education_form():
     st.subheader("Education")
 
     for i, ed in enumerate(st.session_state.education):
-        with st.expander(f"{ed["degree"]} @ {ed['school']}", expanded=True):
+        with st.expander(f"{ed['degree']} @ {ed['school']}", expanded=True):
             st.session_state.education[i]["school"] = st.text_input(
                 "School/University",
                 value=ed["school"],
