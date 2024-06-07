@@ -1,6 +1,8 @@
 import re
 from datetime import datetime, date
 import pdfplumber
+from io import BytesIO
+from typing import Union
 
 # text sizes:
 # headers 15.75
@@ -16,15 +18,28 @@ JOB_TITLE_THRESHOLD = 11.0
 DATE_LOCATION_DESCRIPTION_THRESHOLD = 10.0
 DATE_RANGE_REGEX = r"\b([A-Za-z]+ \d{4}) - (([A-Za-z]+ \d{4})|Present)\b"
 DATE_FORMAT = "%B %Y"
+EMAIL_REGEX = r"\b[a-zA-Z0-9._-]+@[a-zA-Z0-9]+(\.[a-zA-Z]{2,}){1,}\b"
 
 
-def extract_sidebar(file_path):
-    pass
+def extract_email(pdf_file: Union[str, BytesIO]):
+    with pdfplumber.open(pdf_file) as pdf:
+        if len(pdf.pages) > 0:
+            page = pdf.pages[0]
+            # Crop to the sidebar
+            cropped = page.crop((0, 0, page.width / 3, page.height))
+            text = cropped.extract_text_simple()
+            match = re.search(EMAIL_REGEX, text)
+            # Extract and print the first email address found
+            if match:
+                email = match.group(0)
+                return email
+            else:
+                return ""
 
 
-def extract_sections(file_path):
+def extract_sections(pdf_file: Union[str, BytesIO]):
     page_regex = re.compile(r"Page\s+\d+\s+of\s+\d+", re.IGNORECASE)
-    with pdfplumber.open(file_path) as pdf:
+    with pdfplumber.open(pdf_file) as pdf:
         sections = {}
         section_text = []
         # First section is name and headline
@@ -110,8 +125,10 @@ def extract_education(education_lines):
         if size > COMPANY_UNIVERSITY_THRESHOLD:
             if current:
                 current["description"] = description
+                current["degree"] = current.get("degree", "")
                 current["start"] = current.get("start", None)
                 current["end"] = current.get("end", None)
+                current["gpa"] = 0.0
                 education.append(current)
                 description = ""
             current = {"school": line}
@@ -139,19 +156,23 @@ def extract_education(education_lines):
 
             else:
                 description += " " + line
+
+    # Barring against education entries that are missing fields
     current["description"] = description
+    current["degree"] = current.get("degree", "")
     current["start"] = current.get("start", None)
     current["end"] = current.get("end", None)
+    current["gpa"] = 0.0
     education.append(current)
     return education
 
 
-def parse_linkedin_profile_pdf(file_path):
-    name, sections = extract_sections(file_path)
+def parse_linkedin_profile_pdf(pdf_file: Union[str, BytesIO]):
+    name, sections = extract_sections(pdf_file)
     return {
         "intro": {
             "name": name,
-            "email": "",
+            "email": extract_email(pdf_file),
             "summary": extract_summary(sections["summary"]),
         },
         "experience": extract_experience(sections["experience"]),
