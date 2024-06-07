@@ -45,7 +45,7 @@ def upload_linkedin_profile():
         st.markdown(
             '1. Navigate to your LinkedIn Profile Page \n2. Click on the "More" Button. \n3. Click "Save to PDF"'
         )
-        st.image("import_instructions.png")
+        st.image("images/import_instructions.png")
 
 
 def render_form():
