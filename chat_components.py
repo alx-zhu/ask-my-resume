@@ -3,7 +3,7 @@ import streamlit as st
 from openai import OpenAI
 from constants import OPENAI_INITIAL_CONVERSATION
 from keybert import KeyBERT
-from rank_projects import rank_projects_by_keyphrases, rank_experiences_by_keyphrases
+from keywords import rank_projects_by_keyphrases, rank_experiences_by_keyphrases
 
 
 @st.cache_resource()
