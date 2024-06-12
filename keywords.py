@@ -6,9 +6,32 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from typing import List, Tuple
+from keybert import KeyBERT
 
 nltk.download("stopwords")
 nltk.download("wordnet")
+
+
+def get_user_keyphrases(text, old_keywords, decay_factor=0.5):
+    kw_model = KeyBERT()
+    kw_score_pairs = kw_model.extract_keywords(
+        text,
+        keyphrase_ngram_range=(1, 2),
+        stop_words="english",
+        # use_maxsum=True,
+        top_n=10,
+    )
+
+    scores = dict(
+        filter(
+            lambda x: x[1] > 0.1,
+            map(lambda x: (x[0], x[1] * decay_factor), old_keywords),
+        )
+    )
+    for kw, new_score in kw_score_pairs:
+        scores[kw] = scores.get(kw, 0) + new_score
+
+    return sorted(list(scores.items()), key=lambda x: -x[1])
 
 
 # Preprocess text for usage in NLP
@@ -50,7 +73,7 @@ def rank_texts_by_keyphrases(texts, keyphrase_score_pairs: List[Tuple[str, float
         preprocess_text(keyphrase) for (keyphrase, _) in keyphrase_score_pairs
     ]
     keyword_scores = [score for (_, score) in keyphrase_score_pairs]
-    print(processed_keyphrases, keyword_scores)
+    # print(processed_keyphrases, keyword_scores)
 
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(processed_texts + processed_keyphrases)
@@ -60,15 +83,15 @@ def rank_texts_by_keyphrases(texts, keyphrase_score_pairs: List[Tuple[str, float
 
     # Cosine similarity between all projects and all keyphrases
     similarity_scores = cosine_similarity(project_vectors, keyphrase_vectors)
-    print(similarity_scores)
+    # print(similarity_scores)
 
     # Multiple cosine similarity by the keyword's weight (from KeyBERT similarity)
     weighted_scores_matrix = similarity_scores * keyword_scores
-    print(weighted_scores_matrix)
+    # print(weighted_scores_matrix)
 
     # Sum to get total weighted similarity
     weighted_scores = np.sum(weighted_scores_matrix, axis=1)
-    print(weighted_scores)
+    # print(weighted_scores)
 
     # Rank based on weighted similarity
     sorted_indices = np.argsort(weighted_scores)[::-1]
@@ -76,9 +99,9 @@ def rank_texts_by_keyphrases(texts, keyphrase_score_pairs: List[Tuple[str, float
     ranked_texts = [texts[i] for i in sorted_indices]
 
     # Print and return the ranking by index, and ranked pairs of (project, similarity score)
-    text_score_pairs = zip(ranked_texts, ranked_scores)
-    for rank, (text, score) in enumerate(text_score_pairs, start=1):
-        print(f"Rank {rank}: {text} (Score: {score:.4f})")
+    # text_score_pairs = zip(ranked_texts, ranked_scores)
+    # for rank, (text, score) in enumerate(text_score_pairs, start=1):
+    #     print(f"Rank {rank}: {text} (Score: {score:.4f})")
 
     # return sorted_indices, text_score_pairs
     return sorted_indices, ranked_scores, ranked_texts

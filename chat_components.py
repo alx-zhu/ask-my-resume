@@ -2,8 +2,11 @@ import time
 import streamlit as st
 from openai import OpenAI
 from constants import OPENAI_INITIAL_CONVERSATION
-from keybert import KeyBERT
-from keywords import rank_projects_by_keyphrases, rank_experiences_by_keyphrases
+from keywords import (
+    get_user_keyphrases,
+    rank_projects_by_keyphrases,
+    rank_experiences_by_keyphrases,
+)
 
 
 @st.cache_resource()
@@ -12,7 +15,7 @@ def get_cached_openai_service():
 
 
 def chat_back_button(id=""):
-    if st.button("Back to My Resume", key=f"chat_back_button_{id}"):
+    if st.button("Edit Resume", key=f"chat_back_button_{id}"):
         st.session_state.is_chat_open = False
         st.session_state.display_conversation = []
         st.session_state.gpt_conversation = []
@@ -23,6 +26,9 @@ def openai_chat():
     if not "intro" in st.session_state:
         st.error("Something went wrong. Please reload the page")
         return
+
+    if not "keywords" in st.session_state:
+        st.session_state.keywords = []
 
     name = st.session_state.intro["name"]
     email = st.session_state.intro["email"]
@@ -107,7 +113,10 @@ def openai_chat():
         with assistant_placeholder:
             with st.spinner("Processing..."):
                 # display user keywords
-                keyphrase_pairs = get_user_keyphrases()
+                st.session_state.keywords = get_user_keyphrases(
+                    prompt, st.session_state.keywords
+                )
+                print(st.session_state.keywords)
 
                 # Send message to Open AI
                 completion = open_ai.chat.completions.create(
@@ -119,12 +128,11 @@ def openai_chat():
 
                 # List the most relevant projects and experiences
                 st.session_state.relevant_projects = rank_projects_by_keyphrases(
-                    st.session_state.projects, keyphrase_pairs
+                    st.session_state.projects, st.session_state.keywords
                 )[:3]
 
-                print(st.session_state.relevant_projects)
                 st.session_state.relevant_experience = rank_experiences_by_keyphrases(
-                    st.session_state.experience, keyphrase_pairs
+                    st.session_state.experience, st.session_state.keywords
                 )[:3]
 
         # Load relevant projects and experience into the sidebar
@@ -169,24 +177,3 @@ def openai_chat():
         st.session_state.gpt_conversation.append(
             {"role": "assistant", "content": response}
         )
-
-
-def get_user_keyphrases():
-    user_messages = " ".join(
-        map(
-            lambda msg: msg["content"],
-            filter(
-                lambda msg: msg["role"] == "user", st.session_state.display_conversation
-            ),
-        )
-    )
-    kw_model = KeyBERT()
-    return kw_model.extract_keywords(
-        user_messages,
-        keyphrase_ngram_range=(1, 2),
-        stop_words="english",
-        # use_maxsum=True,
-        top_n=10,
-    )[::-1]
-    # with st.sidebar:
-    #     st.write(keywords)
