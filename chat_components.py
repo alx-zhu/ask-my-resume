@@ -1,3 +1,4 @@
+import json
 import time
 import streamlit as st
 from openai import OpenAI
@@ -30,6 +31,12 @@ def openai_chat():
     if not "keywords" in st.session_state:
         st.session_state.keywords = []
 
+    if not "suggestions" in st.session_state:
+        st.session_state.suggestions = []
+
+    if not "suggested_prompt_used" in st.session_state:
+        st.session_state.suggested_prompt_used = ""
+
     name = st.session_state.intro["name"]
     email = st.session_state.intro["email"]
     summary = st.session_state.intro["summary"]
@@ -55,21 +62,26 @@ def openai_chat():
         st.session_state.gpt_conversation.append(
             {
                 "role": "system",
-                "content": f"You are {name}'s Resume Assistant. Make conversation sound natural, always attribute to {name}. IMPORTANT: Follow the model of the previous conversation. You are a chat assistant LLM whose objective is to ingest the resume of {name} and make conversation with the user to inform them about {name}'s qualifications. Ensure responses are easy to understand, sound natural, and provide details and reasoning behind each response. For example, when providing context about {name}'s experience, explain what they did at each job and why that makes them qualified. Keep responses concise when possible and format with markdown to make the text readable. Include direct references to the experiences, projects, and education provided to help show how {name} is qualified. Note: Do not generate information outside of the context provided. Stick strongly to the experience, projects, education, and introduction given in the context provided! If you do not know the answer to a question, say that you do not know, and to contact {name} directly using the email: {email}. Here is the context about {name}. Introduction: {summary}. Work Experience: {experience}. Projects: {projects}. Education: {education}. You MUST use this information only. Do not add or remove information from what I have provided. To start, introduce yourself like this: Hello! I am [name]'s Resume Assistant! Feel free to ask me any questions about [name]'s work experience, projects, education, and general qualifications. If you aren't sure what to ask, try these:\n 1. Give me a timeline of {name}'s work experience. \n 2. What is {name} most experienced with? \n 3. Give me examples of {name}'s leadership experience.",
+                "content": f"You are {name}'s Resume Assistant. Make conversation sound natural, always attribute to {name}. IMPORTANT: Follow the model of the previous conversation. You are a chat assistant LLM whose objective is to ingest the resume of {name} and make conversation with the user to inform them about {name}'s qualifications. Ensure responses are easy to understand, sound natural, and provide details and reasoning behind each response. For example, when providing context about {name}'s experience, explain what they did at each job and why that makes them qualified. Keep responses concise when possible and format with markdown to make the text readable. Include direct references to the experiences, projects, and education provided to help show how {name} is qualified. Note: Do not generate information outside of the context provided. Stick strongly to the experience, projects, education, and introduction given in the context provided! If you do not know the answer to a question, say that you do not know, and to contact {name} directly using the email: {email}. With each message, generate 3 suggested questions to lead the user towards learning more about <Insert name> and their experience and projects. You must respond in JSON format. \n\nHere is the context about {name}. Introduction: {summary}. Work Experience: {experience}. Projects: {projects}. Education: {education}. You MUST use this information only. Do not add or remove information from what I have provided. To start, introduce yourself like this: Hello! I am [name]'s Resume Assistant! Feel free to ask me any questions about [name]'s work experience, projects, education, and general qualifications. If you aren't sure what to ask, try these:\n",
+                # 1. Give me a timeline of {name}'s work experience. \n 2. What is {name} most experienced with? \n 3. Give me examples of {name}'s leadership experience.
             },
         )
 
         completion = open_ai.chat.completions.create(
             model="gpt-3.5-turbo",
+            response_format={"type": "json_object"},
             messages=st.session_state.gpt_conversation,
         )
         response = completion.choices[0].message.content
+        response_obj = json.loads(response)
+        message = response_obj["message"]
+        st.session_state.suggestions = response_obj["suggestions"]
 
         st.session_state.gpt_conversation.append(
             {"role": "assistant", "content": response}
         )
         st.session_state.display_conversation.append(
-            {"role": "assistant", "content": response}
+            {"role": "assistant", "content": message}
         )
 
     with st.sidebar:
@@ -92,6 +104,12 @@ def openai_chat():
 
     user_placeholder = st.empty()
     assistant_placeholder = st.empty()
+    suggestions_placeholder = st.empty()
+
+    if st.session_state.suggestions:
+        render_suggestions(
+            suggestions_placeholder, 3 * len(st.session_state.display_conversation)
+        )
 
     # React to user input
     if st.session_state.message_count > 10:
@@ -99,81 +117,114 @@ def openai_chat():
             "You have passed your limit of 10 messages. In order to keep this service free, there is a 10 message limit per user. Please contact alexanderzhu07@gmail.com with any questions."
         )
 
-    elif prompt := st.chat_input(f"Ask me about {name}!", max_chars=200):
-        st.session_state.message_count += 1
+    else:
+        prompt = st.chat_input(f"Ask me about {name}!", max_chars=200)
+        if st.session_state.suggested_prompt_used or prompt:
+            suggestions_placeholder.empty()
+            st.session_state.message_count += 1
 
-        with user_placeholder:
-            st.chat_message("user").markdown(prompt)
+            # If one of the suggestion buttons was used, that prompt takes priority
+            if st.session_state.suggested_prompt_used:
+                prompt = st.session_state.suggested_prompt_used
+                st.session_state.suggested_prompt_used = ""
 
-        st.session_state.display_conversation.append(
-            {"role": "user", "content": prompt}
-        )
-        st.session_state.gpt_conversation.append({"role": "user", "content": prompt})
+            with user_placeholder:
+                st.chat_message("user").markdown(prompt)
 
-        with assistant_placeholder:
-            with st.spinner("Processing..."):
-                # display user keywords
-                st.session_state.keywords = get_user_keyphrases(
-                    prompt, st.session_state.keywords
-                )
-                print(st.session_state.keywords)
+            st.session_state.display_conversation.append(
+                {"role": "user", "content": prompt}
+            )
+            st.session_state.gpt_conversation.append(
+                {"role": "user", "content": prompt}
+            )
 
-                # Send message to Open AI
-                completion = open_ai.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=st.session_state.gpt_conversation,
-                )
+            with assistant_placeholder:
+                with st.spinner("Processing..."):
+                    # display user keywords
+                    st.session_state.keywords = get_user_keyphrases(
+                        prompt, st.session_state.keywords
+                    )
 
-                response = completion.choices[0].message.content
+                    # Send message to Open AI
+                    completion = open_ai.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=st.session_state.gpt_conversation,
+                    )
 
-                # List the most relevant projects and experiences
-                st.session_state.relevant_projects = rank_projects_by_keyphrases(
-                    st.session_state.projects, st.session_state.keywords
-                )[:3]
+                    response = completion.choices[0].message.content
+                    response_obj = json.loads(response)
+                    message = response_obj["message"]
+                    st.session_state.suggestions = response_obj["suggestions"]
 
-                st.session_state.relevant_experience = rank_experiences_by_keyphrases(
-                    st.session_state.experience, st.session_state.keywords
-                )[:3]
+                    # List the most relevant projects and experiences
+                    st.session_state.relevant_projects = rank_projects_by_keyphrases(
+                        st.session_state.projects, st.session_state.keywords
+                    )[:3]
 
-        # Load relevant projects and experience into the sidebar
-        with relevant_projects_placeholder:
-            with st.container():
-                for rank, project in enumerate(
-                    st.session_state.relevant_projects, start=1
-                ):
-                    with st.expander(f"{rank}. {project['title']}"):
-                        st.markdown(f"## {project['title']}")
-                        st.markdown(
-                            f"#### {project['organization']} (*{project['start']} to {project['end']}*)"
-                        )
-                        st.markdown(project["description"])
+                    st.session_state.relevant_experience = (
+                        rank_experiences_by_keyphrases(
+                            st.session_state.experience, st.session_state.keywords
+                        )[:3]
+                    )
 
-        with relevant_experience_placeholder:
-            with st.container():
-                for rank, experience in enumerate(
-                    st.session_state.relevant_experience, start=1
-                ):
-                    with st.expander(
-                        f"{rank}. {experience['title']} @ {experience['company']}"
+            # Load relevant projects and experience into the sidebar
+            with relevant_projects_placeholder:
+                with st.container():
+                    for rank, project in enumerate(
+                        st.session_state.relevant_projects, start=1
                     ):
-                        st.markdown(f"## {experience['title']}")
-                        st.markdown(
-                            f"#### {experience['company']} (*{experience['start']} to {experience['end']}*)"
-                        )
-                        st.markdown(experience["description"])
+                        with st.expander(f"{rank}. {project['title']}"):
+                            st.markdown(f"## {project['title']}")
+                            st.markdown(
+                                f"#### {project['organization']} (*{project['start']} to {project['end']}*)"
+                            )
+                            st.markdown(project["description"])
 
-        # Display assistant response in chat message container
-        full_msg = ""
-        with assistant_placeholder:
-            for word in response.split(" "):
-                full_msg += word + " "
-                time.sleep(0.05)
-                st.chat_message("assistant").markdown(full_msg)
+            with relevant_experience_placeholder:
+                with st.container():
+                    for rank, experience in enumerate(
+                        st.session_state.relevant_experience, start=1
+                    ):
+                        with st.expander(
+                            f"{rank}. {experience['title']} @ {experience['company']}"
+                        ):
+                            st.markdown(f"## {experience['title']}")
+                            st.markdown(
+                                f"#### {experience['company']} (*{experience['start']} to {experience['end']}*)"
+                            )
+                            st.markdown(experience["description"])
 
-        # Add assistant response to chat history
-        st.session_state.display_conversation.append(
-            {"role": "assistant", "content": response}
-        )
-        st.session_state.gpt_conversation.append(
-            {"role": "assistant", "content": response}
-        )
+            # Display assistant response in chat message container
+            full_msg = ""
+            with assistant_placeholder:
+                for word in message.split(" "):
+                    full_msg += word + " "
+                    time.sleep(0.05)
+                    st.chat_message("assistant").markdown(full_msg)
+
+            if st.session_state.suggestions:
+                render_suggestions(
+                    suggestions_placeholder,
+                    start=3 * len(st.session_state.display_conversation),
+                )
+
+            # Add assistant response to chat history
+            st.session_state.display_conversation.append(
+                {"role": "assistant", "content": message}
+            )
+            st.session_state.gpt_conversation.append(
+                {"role": "assistant", "content": response}
+            )
+
+
+def render_suggestions(suggestions_placeholder, start=0):
+    with suggestions_placeholder:
+        with st.container():
+            for i, suggestion in enumerate(st.session_state.suggestions, start=start):
+                if st.button(
+                    suggestion,
+                    key=f"suggestion_{i}",
+                    use_container_width=True,
+                    type="secondary",
+                ):
+                    st.session_state.suggested_prompt_used = suggestion
