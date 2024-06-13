@@ -62,7 +62,7 @@ def openai_chat():
         st.session_state.gpt_conversation.append(
             {
                 "role": "system",
-                "content": f"You are {name}'s Resume Assistant. Make conversation sound natural, always attribute to {name}. IMPORTANT: Follow the model of the previous conversation. You are a chat assistant LLM whose objective is to ingest the resume of {name} and make conversation with the user to inform them about {name}'s qualifications. Ensure responses are easy to understand, sound natural, and provide details and reasoning behind each response. For example, when providing context about {name}'s experience, explain what they did at each job and why that makes them qualified. Keep responses concise when possible and format with markdown to make the text readable. Include direct references to the experiences, projects, and education provided to help show how {name} is qualified. Note: Do not generate information outside of the context provided. Stick strongly to the experience, projects, education, and introduction given in the context provided! If you do not know the answer to a question, say that you do not know, and to contact {name} directly using the email: {email}. With each message, generate 3 suggested questions to lead the user towards learning more about <Insert name> and their experience and projects. You must respond in JSON format. \n\nHere is the context about {name}. Introduction: {summary}. Work Experience: {experience}. Projects: {projects}. Education: {education}. You MUST use this information only. Do not add or remove information from what I have provided. To start, introduce yourself like this: Hello! I am [name]'s Resume Assistant! Feel free to ask me any questions about [name]'s work experience, projects, education, and general qualifications. If you aren't sure what to ask, try these:\n",
+                "content": f"You are {name}'s Resume Assistant. Make conversation sound natural, always attribute to {name}. IMPORTANT: Follow the model of the previous conversation. You are a chat assistant LLM whose objective is to ingest the resume of {name} and make conversation with the user to inform them about {name}'s qualifications. Ensure responses are easy to understand, sound natural, and provide details and reasoning behind each response. For example, when providing context about {name}'s experience, explain what they did at each job and why that makes them qualified. Keep responses concise when possible and format with markdown to make the text readable. Include direct references to the experiences, projects, and education provided to help show how {name} is qualified. Note: Do not generate information outside of the context provided. Stick strongly to the experience, projects, education, and introduction given in the context provided! If you do not know the answer to a question, say that you do not know, and to contact {name} directly using the email: {email}. With each message, generate 3 suggested questions to 1) dive deeper into the current project or experience OR 2) Explore other similar/relevant projects and experience. You must respond in JSON format. \n\nHere is the context about {name}. Introduction: {summary}. Work Experience: {experience}. Projects: {projects}. Education: {education}. You MUST use this information only. Do not add or remove information from what I have provided. To start, introduce yourself like this: Hello! I am [name]'s Resume Assistant! Feel free to ask me any questions about [name]'s work experience, projects, education, and general qualifications. If you aren't sure what to ask, try these:\n",
                 # 1. Give me a timeline of {name}'s work experience. \n 2. What is {name} most experienced with? \n 3. Give me examples of {name}'s leadership experience.
             },
         )
@@ -86,10 +86,28 @@ def openai_chat():
 
     with st.sidebar:
         st.subheader("Relevant Projects (from keywords)")
-        relevant_projects_placeholder = st.empty()
+        with st.container():
+            for rank, project in enumerate(st.session_state.relevant_projects, start=1):
+                with st.expander(f"{rank}. {project['title']}"):
+                    st.markdown(f"## {project['title']}")
+                    st.markdown(
+                        f"#### {project['organization']} (*{project['start']} to {project['end']}*)"
+                    )
+                    st.markdown(project["description"])
         st.divider()
         st.subheader("Relevant Experience (from keywords)")
-        relevant_experience_placeholder = st.empty()
+        with st.container():
+            for rank, experience in enumerate(
+                st.session_state.relevant_experience, start=1
+            ):
+                with st.expander(
+                    f"{rank}. {experience['title']} @ {experience['company']}"
+                ):
+                    st.markdown(f"## {experience['title']}")
+                    st.markdown(
+                        f"#### {experience['company']} (*{experience['start']} to {experience['end']}*)"
+                    )
+                    st.markdown(experience["description"])
 
     # Displaying and updating chat
     st.title("Ask My Resume")
@@ -167,33 +185,6 @@ def openai_chat():
                         )[:3]
                     )
 
-            # Load relevant projects and experience into the sidebar
-            with relevant_projects_placeholder:
-                with st.container():
-                    for rank, project in enumerate(
-                        st.session_state.relevant_projects, start=1
-                    ):
-                        with st.expander(f"{rank}. {project['title']}"):
-                            st.markdown(f"## {project['title']}")
-                            st.markdown(
-                                f"#### {project['organization']} (*{project['start']} to {project['end']}*)"
-                            )
-                            st.markdown(project["description"])
-
-            with relevant_experience_placeholder:
-                with st.container():
-                    for rank, experience in enumerate(
-                        st.session_state.relevant_experience, start=1
-                    ):
-                        with st.expander(
-                            f"{rank}. {experience['title']} @ {experience['company']}"
-                        ):
-                            st.markdown(f"## {experience['title']}")
-                            st.markdown(
-                                f"#### {experience['company']} (*{experience['start']} to {experience['end']}*)"
-                            )
-                            st.markdown(experience["description"])
-
             # Display assistant response in chat message container
             full_msg = ""
             with assistant_placeholder:
@@ -202,12 +193,6 @@ def openai_chat():
                     time.sleep(0.05)
                     st.chat_message("assistant").markdown(full_msg)
 
-            if st.session_state.suggestions:
-                render_suggestions(
-                    suggestions_placeholder,
-                    start=3 * len(st.session_state.display_conversation),
-                )
-
             # Add assistant response to chat history
             st.session_state.display_conversation.append(
                 {"role": "assistant", "content": message}
@@ -215,6 +200,8 @@ def openai_chat():
             st.session_state.gpt_conversation.append(
                 {"role": "assistant", "content": response}
             )
+
+            st.rerun()
 
 
 def render_suggestions(suggestions_placeholder, start=0):
