@@ -6,7 +6,7 @@ from linkedin_pdf_parser import parse_linkedin_profile_pdf
 
 
 def form_submit_button(id=""):
-    if st.button("Submit", key=f"submit_button_{id}"):
+    if st.button("Submit", key=f"submit_button_{id}", use_container_width=True):
         st.session_state.is_chat_open = True
         st.rerun()
 
@@ -72,13 +72,13 @@ def render_form():
 
         st.divider()
 
-        col1, col2 = st.columns(2)
+        (col1, col2) = st.columns((2, 1))
         with col1:
+            form_submit_button("sidebar")
+        with col2:
             if st.button("Clear All", key="clear_all"):
                 reset_all_form_fields()
                 st.rerun()
-        with col2:
-            form_submit_button("sidebar")
 
 
 def introduction_form():
