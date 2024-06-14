@@ -4,7 +4,10 @@ A chat interface that enables users to give others the ability to interact with 
 
 Keywords identified using the KeyBERT library, with projects ranked using cosine similarity.
 
+
 ## License
+
+Code written by Alexander Zhu licensed under CC BY-NC 4.0.
 
 Creative Commons Attribution-NonCommercial 4.0 International
 
